@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moviebil Genres</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f9f9f9;
+    }
+    .box {
+      border-radius: 20px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .orange-box {
+      background-color: #f5a623;
+      width: 200px;
+    }
+    .red-box {
+      background-color: #f76d3c;
+      width: 200px;
+    }
+    .brown-box {
+      background-color: #8b5e3c;
+      color: white;
+      width: 400px;
+    }
+    .yellow-box {
+      background-color: #ffeb3b;
+      width: 400px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    select, input {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Moviebilgenres.com</h2>
+
+  <div class="box orange-box">
+    <h1>Type</h1>
+    <select id="typeSelect">
+      <option>Movies</option>
+      <option>Serials</option>
+    </select>
+    <h1>Rating</h1>
+    <select id="ratingSelect">
+      <option>With high rating</option>
+      <option>Any rating</option>
+    </select>
+    <h1>Country</h1>
+    <select id="countrySelect">
+      <option>Russian</option>
+      <option selected>American</option>
+    </select>
+  </div>
+
+  <div class="box red-box">
+    <h1>Years</h1>
+    <input type="text" id="yearInput" placeholder="e.g. 2015-2020">
+  </div>
+
+  <div class="box brown-box">
+    <h1>Favourite Genres</h1>
+    <input type="text" id="genreInput" placeholder="Enter genres, e.g. Drama, Action">
+  </div>
+
+  <button onclick="generateRecommendation()">Generate</button>
+
+  <div class="box yellow-box" id="resultBox">
+    <h1>Result</h1>
+    <p id="movieResult">Your recommendation will appear here.</p>
+  </div>
+
+  <script>
+    const movies = [
+      { title: "Inception", genre: "Action", country: "American", year: 2010, rating: "high" },
+      { title: "The Matrix", genre: "Sci-Fi", country: "American", year: 1999, rating: "high" },
+      { title: "Brother", genre: "Drama", country: "Russian", year: 1997, rating: "high" },
+      { title: "Irony of Fate", genre: "Romance", country: "Russian", year: 1976, rating: "any" },
+      { title: "Tenet", genre: "Action", country: "American", year: 2020, rating: "high" },
+      { title: "Fight Club", genre: "Drama", country: "American", year: 1999, rating: "high" },
+      { title: "Interstellar", genre: "Sci-Fi", country: "American", year: 2014, rating: "high" },
+      { title: "Avatar", genre: "Sci-Fi", country: "American", year: 2009, rating: "high" },
+      { title: "The Revenant", genre: "Adventure", country: "American", year: 2015, rating: "high" },
+      { title: "Green Book", genre: "Biography", country: "American", year: 2018, rating: "high" }
+    ];
+
+    const series = [
+      { title: "Chernobyl", genre: "Drama", country: "American", year: 2019, rating: "high" },
+      { title: "Brigada", genre: "Crime", country: "Russian", year: 2002, rating: "high" },
+      { title: "The Office", genre: "Comedy", country: "American", year: 2005, rating: "high" },
+      { title: "Sherlock", genre: "Mystery", country: "American", year: 2010, rating: "high" },
+      { title: "Breaking Bad", genre: "Crime", country: "American", year: 2008, rating: "high" },
+      { title: "Stranger Things", genre: "Mystery", country: "American", year: 2016, rating: "high" },
+      { title: "House M.D.", genre: "Drama", country: "American", year: 2004, rating: "high" },
+      { title: "True Detective", genre: "Crime", country: "American", year: 2014, rating: "high" },
+      { title: "Game of Thrones", genre: "Fantasy", country: "American", year: 2011, rating: "high" },
+      { title: "Better Call Saul", genre: "Drama", country: "American", year: 2015, rating: "high" }
+    ];
+
+    function generateRecommendation() {
+      const type = document.getElementById("typeSelect").value;
+      const rating = document.getElementById("ratingSelect").value === "With high rating" ? "high" : "any";
+      const country = document.getElementById("countrySelect").value;
+      const genreInput = document.getElementById("genreInput").value.toLowerCase();
+      const yearRange = document.getElementById("yearInput").value.trim();
+
+      let startYear = 0, endYear = 9999;
+      if (yearRange.includes("-")) {
+        const parts = yearRange.split("-");
+        startYear = parseInt(parts[0]) || 0;
+        endYear = parseInt(parts[1]) || 9999;
+      }
+
+      const items = type === "Movies" ? movies.slice() : series.slice();
+
+      const filtered = items.filter(item => {
+        const genreMatch = genreInput === "" || item.genre.toLowerCase().includes(genreInput);
+        const countryMatch = item.country === country;
+        const ratingMatch = rating === "any" || item.rating === "high";
+        const yearMatch = item.year >= startYear && item.year <= endYear;
+        return genreMatch && countryMatch && ratingMatch && yearMatch;
+      });
+
+      const resultBox = document.getElementById("movieResult");
+
+      if (filtered.length === 0) {
+        resultBox.innerHTML = "<strong>No matches found based on your filters.</strong>";
+      } else {
+        const randomIndex = Math.floor(Math.random() * filtered.length);
+        const selected = filtered[randomIndex];
+        resultBox.innerHTML = `<strong>Recommended ${type.toLowerCase()}:</strong> ${selected.title} (${selected.genre}, ${selected.year})`;
+      }
+    }
+  </script>
+
+</body>
+</html>
